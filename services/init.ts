@@ -30,9 +30,15 @@ export const initDatabase = async () => {
 async function verifyTables(db: SQLiteDatabase) {
   const tables = [
     "players",
+    "tools",
+    "player_tools",
     "skills",
     "player_skills",
+    "clients",
     "gigs",
+    "player_active_gigs",
+    "player_gigs_log",
+    "player_client_progress",
     "daily_milestones",
     "player_daily_milestones",
   ];

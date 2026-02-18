@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { theme } from "../../constant/theme.ts";
-import { IconNameMC } from "../../types/common.d.ts";
+import { theme } from "../../../constant/theme.ts";
+import { IconNameMC } from "../../../types/common.d.ts";
+import { formatCurrency } from "../../../utils/helper.ts";
 
 const { width } = Dimensions.get("window");
 
@@ -59,7 +60,7 @@ export const AllSkillCard = ({
         <Text
           style={[styles.actionBtnText, !isBuyable && { color: "#94a3b8" }]}
         >
-          ${price} {isBuyable ? "Buy Skill" : "Unlock"}
+          {isBuyable ? `$${formatCurrency(price)} Learn` : "Locked"}
         </Text>
       </TouchableOpacity>
     </View>
@@ -68,11 +69,11 @@ export const AllSkillCard = ({
 const styles = StyleSheet.create({
   card: {
     width: (width - 36) / 2,
-    backgroundColor: "#fff",
-    borderRadius: 20,
+    backgroundColor: theme.colors["white"],
+    borderRadius: 16,
     padding: 12,
     borderWidth: 1,
-    borderColor: "#f1f5f9",
+    borderColor: "rgba(37, 244, 106, 0.05)",
     elevation: 2,
   },
   statusTag: {
@@ -98,11 +99,11 @@ const styles = StyleSheet.create({
   cardReq: { fontSize: 10, fontWeight: "600", color: theme.colors.success },
   actionBtn: {
     width: "100%",
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     borderRadius: 12,
     alignItems: "center",
     paddingVertical: 8,
   },
   disabledBtn: { backgroundColor: "#f1f5f9" },
-  actionBtnText: { fontSize: 12, fontWeight: "bold", color: "#fff" },
+  actionBtnText: { fontSize: 16, fontWeight: "bold", color: "#fff" },
 });

@@ -1,5 +1,7 @@
 export const theme = {
   colors: {
+    white: "#fff",
+    black: "#0f172a",
     // --- Freelance Empire / Onboarding UI ---
     primary: "#25f46a", // High-vis green
     secondary: "#3b82f6", // Professional blue
@@ -11,6 +13,7 @@ export const theme = {
     goldPale: "#f3d192", // Muted parchment gold
     borderV2: "rgba(238, 173, 43, 0.3)", // Subtle gold borders
     mutedV3: "#57534e", // Stone/Grey for inactive states
+    muted: "#f1f5f9",
     light: "#e7e5e4", // Soft white for readability
 
     // --- Functional Colors ---

@@ -19,6 +19,7 @@ export const getProfile = async (): Promise<DBResponse<BasePlayerType>> => {
     }
 
     logSQL("getProfile", true, start, {
+      id: player.id,
       name: player.company_name,
       money: player.money,
     });

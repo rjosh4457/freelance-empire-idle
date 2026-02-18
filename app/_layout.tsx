@@ -12,6 +12,7 @@ import { useMilestoneStore } from "../stores/milestone-store.ts";
 import { useGlobalModal } from "../stores/modal-store.ts";
 import { usePlayerStore } from "../stores/player-store.ts";
 import { useSkillStore } from "../stores/skills-store.ts";
+import { useToolStore } from "../stores/tools-store.ts";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -20,11 +21,12 @@ export default function RootLayout() {
   const { isOpen, skill, closeBuySkill } = useGlobalModal();
   const { updateMoney } = usePlayerStore();
   const { buySkill } = useSkillStore();
-  const getActiveSkills = useSkillStore((state) => state.getActiveSkills);
-  const getSchoolSkills = useSkillStore((state) => state.getSchoolSkills);
+  const getPlayerSkills = useSkillStore((state) => state.getPlayerSkills);
+  const getAllSkills = useSkillStore((state) => state.getAllSkills);
   const getPlayer = usePlayerStore((state) => state.getPlayer);
   const getMilestones = useMilestoneStore((state) => state.getMilestones);
   const player = usePlayerStore((state) => state.player);
+  const { getAllTools } = useToolStore();
   useEffect(() => {
     async function setup() {
       try {
@@ -38,9 +40,10 @@ export default function RootLayout() {
         // This puts the data back into the memory after a soft refresh
         await Promise.all([
           getMilestones(),
-          getActiveSkills(),
-          getSchoolSkills(),
+          getPlayerSkills(),
+          getAllTools([]),
         ]);
+        await getAllSkills();
       } catch (error) {
         console.error("Setup failed", error);
       } finally {

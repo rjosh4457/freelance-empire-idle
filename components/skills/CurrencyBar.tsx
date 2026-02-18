@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { theme } from "../../constant/theme.ts";
 import { usePlayerStore } from "../../stores/player-store.ts";
+import { formatCurrency } from "../../utils/helper.ts";
 
 export const CurrencyBar = () => {
   const insets = useSafeAreaInsets();
@@ -20,7 +21,9 @@ export const CurrencyBar = () => {
           </View>
           <View>
             <Text style={styles.balanceLabel}>BALANCE</Text>
-            <Text style={styles.balanceValue}>${player?.money}</Text>
+            <Text style={styles.balanceValue}>
+              ${formatCurrency(player?.money ?? 0)}
+            </Text>
           </View>
         </View>
         <TouchableOpacity style={styles.addBtn}>

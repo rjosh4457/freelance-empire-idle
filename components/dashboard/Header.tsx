@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { theme } from "../../constant/theme.ts";
 import { usePlayerStore } from "../../stores/player-store.ts";
+import { formatCurrency } from "../../utils/helper.ts";
 
 export const Header = () => {
   const insets = useSafeAreaInsets();
@@ -18,7 +19,9 @@ export const Header = () => {
               color={theme.colors.primary}
             />
           </View>
-          <Text style={styles.balanceText}>${player?.money}</Text>
+          <Text style={styles.balanceText}>
+            ${formatCurrency(player?.money ?? 0)}
+          </Text>
         </View>
         <View style={styles.ratingBadge}>
           <Text style={styles.ratingText}>

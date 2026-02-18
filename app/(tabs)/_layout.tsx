@@ -21,6 +21,12 @@ export default function TabsLayout() {
           title: "Skills",
         }}
       />
+      <Tabs.Screen
+        name="shops"
+        options={{
+          title: "Shops",
+        }}
+      />
     </Tabs>
   );
 }

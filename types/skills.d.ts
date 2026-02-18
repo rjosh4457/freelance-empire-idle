@@ -8,6 +8,7 @@ type BaseSkillType = {
   color: string;
   icon: IconNameMC;
   category: string;
+  learn_duration_minutes: number;
   unlock_at: number;
   base_xp: number;
   base_upgrade_cost: number;
@@ -26,4 +27,6 @@ type ActiveSkillType = Pick<
 > & {
   level: number;
   current_xp: number;
+  learn_start_time: string;
+  learn_end_time: string;
 };

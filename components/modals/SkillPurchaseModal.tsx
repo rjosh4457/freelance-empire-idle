@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { theme } from "../../constant/theme.ts";
+import { IconNameMC } from "../../types/common.d.ts";
 
 const { width } = Dimensions.get("window");
 
@@ -16,7 +17,7 @@ interface PurchaseModalProps {
   isVisible: boolean;
   skillName: string;
   price: number;
-  icon: any;
+  icon: IconNameMC;
   color: string;
   onConfirm: () => void;
   onCancel: () => void;
@@ -53,7 +54,7 @@ export default function SkillPurchaseModal({
           {/* Text Content */}
           <Text style={styles.title}>Confirm Purchase</Text>
           <Text style={styles.description}>
-            Unlock <Text style={styles.boldText}>{skillName}</Text> for{" "}
+            Study <Text style={styles.boldText}>{skillName}</Text> for{" "}
             <Text style={[styles.boldText, { color: theme.colors.primary }]}>
               ${price.toLocaleString()}
             </Text>
@@ -111,13 +112,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "800",
     color: "#0d1c12",
     marginBottom: 8,
   },
   description: {
-    fontSize: 14,
+    fontSize: 16,
     lineHeight: 20,
     textAlign: "center",
     color: "#499c65",

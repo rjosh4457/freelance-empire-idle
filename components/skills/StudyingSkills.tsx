@@ -1,41 +1,35 @@
 import { StyleSheet, Text, View } from "react-native";
 import { theme } from "../../constant/theme.ts";
-import { useGlobalModal } from "../../stores/modal-store.ts";
 import { usePlayerStore } from "../../stores/player-store.ts";
-import { BaseSkillType } from "../../types/skills.d.ts";
-import { AllSkillCard } from "./cards/AllSkillCard.tsx";
-interface AllSkillsProps {
-  skills: BaseSkillType[];
+import { ActiveSkillType } from "../../types/skills.d.ts";
+import { StudyingSkillCard } from "./cards/StudyingSkillCard.tsx";
+
+interface StudyingSkillsProps {
+  skills: ActiveSkillType[];
 }
-export const AllSkills = ({ skills }: AllSkillsProps) => {
+export const StudyingSkills = ({ skills }: StudyingSkillsProps) => {
   const player = usePlayerStore().player;
-  const openModal = useGlobalModal((state) => state.openBuySkill);
 
   return (
     <>
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Core Expertise</Text>
+        <Text style={styles.sectionTitle}>In Progress</Text>
         <View style={styles.unlockedBadge}>
-          <Text style={styles.unlockedBadgeText}>{skills.length} TOTAL</Text>
+          <Text style={styles.unlockedBadgeText}>{skills.length} SKILLS</Text>
         </View>
       </View>
+
       <View style={styles.grid}>
         {player &&
-          skills?.map((skill) => {
-            const isBuyable =
-              skill.base_upgrade_cost <= player?.money &&
-              skill.unlock_at <= player.level;
+          skills.map((skill) => {
             return (
-              <AllSkillCard
+              <StudyingSkillCard
                 key={skill.id}
                 icon={skill.icon}
                 title={skill.name}
-                sub={skill.description}
-                price={skill.base_upgrade_cost}
-                unlock_at={skill.unlock_at}
                 color={skill.color}
-                isBuyable={isBuyable}
-                onPurchased={() => openModal(skill)}
+                startedAt={skill.learn_start_time}
+                finishAt={skill.learn_end_time}
               />
             );
           })}
@@ -43,8 +37,13 @@ export const AllSkills = ({ skills }: AllSkillsProps) => {
     </>
   );
 };
-
 const styles = StyleSheet.create({
+  emptyContainer: {
+    justifyContent: "center",
+    padding: 16,
+    marginTop: 50,
+  },
+
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -64,6 +63,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: theme.colors.primary,
   },
-
-  grid: { flexDirection: "row", flexWrap: "wrap", padding: 12, gap: 12 },
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    padding: 12,
+    gap: 12,
+  },
 });

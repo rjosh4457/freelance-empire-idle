@@ -14,26 +14,26 @@ export const Navigation = () => {
       <NavItem
         icon="work"
         label="Dashboard"
-        path="../(tabs)/"
+        path="/"
         active={isActive("/dashboard")}
       />
       <NavItem
         icon="trending-up"
         label="Skills"
-        path="./skills"
+        path="/skills"
         active={isActive("/skills")}
       />
       <NavItem
         icon="group"
         label="Clients"
-        path="./(tabs)/clients"
+        path="/skills"
         active={isActive("/clients")}
       />
       <NavItem
         icon="storefront"
         label="Shop"
-        path="./(tabs)/skills"
-        active={isActive("/shop")}
+        path="/shops"
+        active={isActive("/shops")}
       />
     </View>
   );

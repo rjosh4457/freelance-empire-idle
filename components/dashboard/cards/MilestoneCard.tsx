@@ -1,8 +1,8 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { Text } from "@react-navigation/elements";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { theme } from "../../constant/theme.ts";
-import { IconNameMC } from "../../types/common.d.ts";
+import { theme } from "../../../constant/theme.ts";
+import { IconNameMC } from "../../../types/common.d.ts";
 
 interface MilestoneCardProps {
   icon: IconNameMC;

@@ -1,10 +1,12 @@
 import { StyleSheet, Text, View } from "react-native";
 import { theme } from "../../constant/theme.ts";
 import { useMilestoneStore } from "../../stores/milestone-store.ts";
-import { MilestoneCard } from "./MilestoneCard.tsx";
+import { MilestoneCard } from "./cards/MilestoneCard.tsx";
 
 export const MilestoneList = () => {
   const { milestones } = useMilestoneStore();
+  console.log(milestones);
+  
   return (
     <View style={styles.milestoneSection}>
       <View style={styles.sectionTitleRow}>

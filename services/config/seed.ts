@@ -1,7 +1,5 @@
 export const SEED_DATA = [
-  `INSERT OR IGNORE INTO daily_milestones 
-(id, name, description, icon, color, target_value, target_type, reward_money, reward_xp) 
-VALUES 
+  `INSERT OR IGNORE INTO daily_milestones (id, name, description, icon, color, target_value, target_type, reward_money, reward_xp) VALUES 
   ('m1', 'Coffee Money', 'Earn your first $50 today', 'payments', '#3b82f6', 50, 'MONEY', 25, 10),
   ('m2', 'Big Leagues', 'Earn a total of $500 today', 'monetization-on','#fbbf24', 500, 'MONEY', 100, 50),
   ('m3', 'Rainmaker', 'Earn a total of $1,000 today', 'trending-up','#ef4444', 1000, 'MONEY', 250, 100),
@@ -23,21 +21,35 @@ VALUES
   ('m19', 'Closer', 'Finish a gig within 1 hour of starting', 'timer', '#ef4444', 1, 'SPEED_FINISH', 200, 100),
   ('m20', 'Overachiever', 'Complete all other 4 dailies', 'workspace-premium', '#ffd700', 4, 'DAILIES_COMPLETED', 1000, 1000);`,
 
-  `INSERT OR IGNORE INTO skills (id, code, name, description, color, icon, category, base_xp, base_upgrade_cost, unlock_at) 
-VALUES
-  ('s1', 'COD', 'Coding', 'Master logical thinking and syntax to build complex systems.', '#3b82f6', 'laptop', 'Technical', 100, 2500, 1),
-  ('s2', 'DES', 'Design', 'Create stunning visuals and intuitive user experiences.', '#fbbf24', 'palette', 'Creative', 100, 2500, 1),
-  ('s3', 'MAT', 'Mathematics', 'Advanced algorithms and data analysis capabilities.', '#6366f1', 'calculate', 'Technical', 120, 2500, 1),
-  ('s4', 'DBM', 'Databases', 'Architect efficient data storage and retrieval systems.', '#06b6d4', 'storage', 'Technical', 110, 2500, 1),
-  ('s5', 'SEC', 'Cybersecurity', 'Protect digital assets from external threats.', '#ef4444', 'security', 'Technical', 150, 2500, 5),
-  ('s6', 'MKT', 'Marketing', 'Spread the word and build a recognizable brand.', '#f43f5e', 'campaign', 'Business', 100, 2500, 5),
-  ('s7', 'NEG', 'Negotiation', 'The art of the deal: get paid what you are worth.', '#14b8a6', 'handshake', 'Business', 130, 2500, 5),
-  ('s8', 'PRJ', 'Project Mgmt', 'Organize tasks and lead teams to victory.', '#8b5cf6', 'assignment', 'Business', 110, 2500, 5),
-  ('s9', 'FIN', 'Finance', 'Optimize taxes, investments, and cash flow.', '#10b981', 'payments', 'Business', 140, 2500, 10),
-  ('s10', 'ENG', 'English', 'Master global communication and technical writing.', '#f97316', 'translate', 'Communication', 80, 2500, 10),
-  ('s11', 'PUB', 'Public Speaking', 'Confidently pitch your ideas to large audiences.', '#ec4899', 'record-voice-over', 'Communication', 120, 2500, 10),
-  ('s12', 'NET', 'Networking', 'Building a high-value circle of professional contacts.', '#22c55e', 'hub', 'Communication', 110, 2500, 10),
-  ('s13', 'AI', 'AI Training', 'Prompt engineering and training custom LLMs.', '#a855f7', 'memory', 'Technical', 160, 2500, 15),
-  ('s14', 'CPY', 'Copywriting', 'Writing words that sell and convert users.', '#fb923c', 'history-edu', 'Creative', 90, 2500, 15),
-  ('s15', 'VID', 'Video Production', 'Creating high-impact motion graphics and content.', '#ef4444', 'videocam', 'Creative', 130, 2500,15);`,
+  `INSERT OR IGNORE INTO skills (id, code, name, description, color, icon, category, learn_duration_minutes, base_xp, base_upgrade_cost, unlock_at) VALUES
+  ('s1', 'COD', 'Coding', 'Master logical thinking and syntax to build complex systems.', '#3b82f6', 'laptop', 'Technical', 10, 100, 2500, 1),
+  ('s2', 'DES', 'Design', 'Create stunning visuals and intuitive user experiences.', '#fbbf24', 'palette', 'Creative', 100, 100, 2500, 1),
+  ('s3', 'MAT', 'Mathematics', 'Advanced algorithms and data analysis capabilities.', '#6366f1', 'calculate', 'Technical', 15, 120, 2500, 1),
+  ('s4', 'DBM', 'Databases', 'Architect efficient data storage and retrieval systems.', '#06b6d4', 'storage', 'Technical', 15, 110, 2500, 1),
+  ('s5', 'SEC', 'Cybersecurity', 'Protect digital assets from external threats.', '#ef4444', 'security', 'Technical', 150, 120, 2500, 5),
+  ('s6', 'MKT', 'Marketing', 'Spread the word and build a recognizable brand.', '#f43f5e', 'campaign', 'Business', 100, 110, 2500, 5),
+  ('s7', 'NEG', 'Negotiation', 'The art of the deal: get paid what you are worth.', '#14b8a6', 'handshake', 'Business', 130, 100, 2500, 5),
+  ('s8', 'PRJ', 'Project Mgmt', 'Organize tasks and lead teams to victory.', '#8b5cf6', 'assignment', 'Business', 110, 100, 2500, 5),
+  ('s9', 'FIN', 'Finance', 'Optimize taxes, investments, and cash flow.', '#10b981', 'payments', 'Business', 140, 100, 2500, 10),
+  ('s10', 'ENG', 'English', 'Master global communication and technical writing.', '#f97316', 'translate', 'Communication', 80, 100, 2500, 10),
+  ('s11', 'PUB', 'Public Speaking', 'Confidently pitch your ideas to large audiences.', '#ec4899', 'record-voice-over', 'Communication', 120, 100, 2500, 10),
+  ('s12', 'NET', 'Networking', 'Building a high-value circle of professional contacts.', '#22c55e', 'hub', 'Communication', 110, 100, 2500, 10),
+  ('s13', 'AI', 'AI Training', 'Prompt engineering and training custom LLMs.', '#a855f7', 'memory', 'Technical', 160, 100, 2500, 15),
+  ('s14', 'CPY', 'Copywriting', 'Writing words that sell and convert users.', '#fb923c', 'history-edu', 'Creative', 90, 100, 2500, 15),
+  ('s15', 'VID', 'Video Production', 'Creating high-impact motion graphics and content.', '#ef4444', 'videocam', 'Creative', 130, 100, 2500, 15);`,
+
+  `INSERT OR IGNORE INTO clients (id, name, tier, description, reputation_required, perks) VALUES
+  ('tier_small', 'Small Business', 'small', 'Local small businesses offering minor gigs and opportunities.', 0, '{"perks": ["small_gigs"]}'),
+  ('tier_medium', 'Medium Business', 'medium', 'Regional businesses with bigger contracts and opportunities.', 50, '{"perks": ["medium_gigs", "bonus_xp"]}'),
+  ('tier_startup', 'Startup', 'startup', 'Growing startups offering high-value gigs and special contracts.', 100, '{"perks": ["startup_gigs", "premium_tools"]}'),
+  ('tier_national', 'National Corporation', 'national', 'Nationwide corporations offering high payment gigs and exclusive projects.', 200, '{"perks": ["national_gigs"]}'),
+  ('tier_global', 'Global Corporation', 'global', 'International corporations offering premium contracts and top-tier rewards.', 400, '{"perks": ["global_gigs", "exclusive_tools"]}');`,
+
+  `INSERT OR IGNORE INTO tools (id, name, category, sub_category, description, price, perks, required_level, image) VALUES
+  ('tool_001', 'Laptop Pro', 'Hardware', 'Computer', 'High-end laptop that boosts productivity.', 500, '{"xp_bonus":10,"energy_reduction":5}', 1, 'ergonomic-chair'),
+  ('tool_002', 'Graphic Tablet', 'Hardware', 'Tablet', 'Tablet for design gigs, increases quality output.', 300, '{"xp_bonus":5,"quality_bonus":15,"applicable_gigs":["design","illustration"]}', 2, 'ergonomic-chair'),
+  ('tool_003', 'Noise-Cancelling Headset', 'Hardware', 'Headset', 'Reduces stress while working.', 150, '{"stress_reduction":10}', 1, 'noice-cancelling-headset'),
+  ('tool_004', 'Premium Software Suite', 'Software', 'Software', 'Speed up work and productivity.', 400, '{"gig_speed_bonus":20,"xp_bonus":10,"applicable_gigs":["development","marketing"]}', 3, 'ergonomic-chair'),
+  ('tool_005', 'Ergonomic Chair', 'Office', 'Furniture', 'Comfortable chair reduces stress during long gigs.', 200, '{"stress_reduction":15}', 1, 'ergonomic-chair');
+  `,
 ];

@@ -1,13 +1,13 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import { ExternalPathString, RelativePathString, useRouter } from "expo-router";
+import type { Href } from "expo-router";
+import { useRouter } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { theme } from "../../constant/theme.ts";
 import { IconNameMC } from "../../types/common.d.ts";
-
 interface NavItemProps {
   icon: IconNameMC;
   label: string;
-  path: RelativePathString | ExternalPathString;
+  path: Href;
   active?: boolean;
 }
 export const NavItem = ({ icon, label, path, active }: NavItemProps) => {

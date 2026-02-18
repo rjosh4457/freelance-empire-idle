@@ -66,6 +66,7 @@ export const getDailyMilestone = async (
       dm.name, 
       dm.description, 
       dm.icon,
+      dm.color,
       dm.target_value, 
       pdm.progress,
       pdm.status,

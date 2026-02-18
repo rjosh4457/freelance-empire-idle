@@ -8,7 +8,7 @@ import { getDb } from "./config/db.ts";
  * Used for the 'All Skills' tab or shop views to show what can be unlocked.
  * * @returns A promise resolving to a DBResponse containing an array of BaseSkillType.
  */
-export const fetchSchoolSkills = async (): Promise<
+export const fetchAllSkills = async (): Promise<
   DBResponse<BaseSkillType[]>
 > => {
   const start = performance.now();
@@ -17,19 +17,19 @@ export const fetchSchoolSkills = async (): Promise<
     const skills = await db.getAllAsync<BaseSkillType>(`SELECT * FROM skills`);
 
     if (!skills || skills.length === 0) {
-      logSQL("fetchSchoolSkills", true, start, "Result: Empty Table");
+      logSQL("fetchAllSkills", true, start, "Result: Empty Table");
       return {
         success: false,
         error: "No Skills Found.",
       };
     }
-    logSQL("fetchSchoolSkills", true, start, { count: skills.length });
+    logSQL("fetchAllSkills", true, start, { count: skills });
     return {
       success: true,
       data: skills,
     };
   } catch (error) {
-    logSQL("fetchSchoolSkills", false, start, error);
+    logSQL("fetchAllSkills", false, start, error);
     return {
       success: false,
       error: "Internal database error.",
@@ -49,7 +49,27 @@ export const fetchActiveSkills = async (): Promise<
   try {
     const db = await getDb();
     const skills = await db.getAllAsync<ActiveSkillType>(
-      "SELECT ps.*, s.* FROM player_skills ps JOIN skills s ON ps.skill_id = s.id",
+      `SELECT 
+          ps.id AS id,   
+          ps.player_id,      
+          ps.skill_id,           
+          ps.level,
+          ps.current_xp,
+          ps.learn_start_time,
+          ps.learn_end_time,  
+          s.name,
+          s.code,
+          s.description,
+          s.category,
+          s.icon,
+          s.color,
+          s.base_xp,
+          s.base_upgrade_cost,
+          s.learn_duration_minutes,
+          s.unlock_at,
+          ps.created_at
+        FROM player_skills ps 
+        JOIN skills s ON ps.skill_id = s.id`,
     );
 
     if (!skills || skills.length === 0) {
@@ -64,7 +84,7 @@ export const fetchActiveSkills = async (): Promise<
         error: "No Skills Found For this Player.",
       };
     }
-    logSQL("fetchActiveSkills", true, start, { count: skills.length });
+    logSQL("fetchActiveSkills", true, start, { count: skills });
     return {
       success: true,
       data: skills,
@@ -86,7 +106,9 @@ export const fetchActiveSkills = async (): Promise<
  */
 export const saveNewSkill = async (
   skillId: string,
-  playerId: number = 1,
+  playerId: number,
+  startAt: string,
+  finishAt: string,
 ): Promise<DBResponse<string>> => {
   const start = performance.now();
   try {
@@ -94,9 +116,9 @@ export const saveNewSkill = async (
     const entryId = `${playerId}_${skillId}`;
 
     const result = await db.runAsync(
-      `INSERT OR IGNORE INTO player_skills (id, player_id, skill_id, level, current_xp) 
-       VALUES (?, ?, ?, ?, ?)`,
-      [entryId, playerId, skillId, 1, 0],
+      `INSERT OR IGNORE INTO player_skills (id, player_id, skill_id, level, current_xp, learn_start_time, learn_end_time) 
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [entryId, playerId, skillId, 1, 0, startAt, finishAt],
     );
 
     if (result.changes > 0) {
@@ -124,6 +146,53 @@ export const saveNewSkill = async (
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown database error",
+    };
+  }
+};
+
+export const updateSkillLevel = async (
+  skillId: string,
+  newLevel: number,
+  newXp: number,
+): Promise<DBResponse<number>> => {
+  const start = performance.now();
+  try {
+    const db = await getDb();
+
+    const result = await db.runAsync(
+      `UPDATE player_skills 
+       SET level = ?, current_xp = ? 
+       WHERE id = ?`,
+      [newLevel, newXp, skillId],
+    );
+
+    if (result.changes > 0) {
+      logSQL("updateSkillLevel", true, start, {
+        skillId,
+        newLevel,
+        newXp,
+      });
+      return {
+        success: true,
+        data: result.lastInsertRowId,
+      };
+    }
+
+    logSQL(
+      "updateSkillLevel",
+      false,
+      start,
+      `No record found for ID: ${skillId}`,
+    );
+    return {
+      success: false,
+      error: `Skill record ${skillId} not found.`,
+    };
+  } catch (error) {
+    logSQL("updateSkillLevel", false, start, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Database update failed",
     };
   }
 };

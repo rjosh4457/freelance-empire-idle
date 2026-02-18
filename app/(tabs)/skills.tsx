@@ -1,109 +1,119 @@
 import { useMemo, useState } from "react";
-import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Navigation } from "../../components/common/Navigation.tsx";
 import { ActiveSkills } from "../../components/skills/ActiveSkills.tsx";
-import { UnlockableSkills } from "../../components/skills/AllSkills.tsx";
+import { AllSkills } from "../../components/skills/AllSkills.tsx";
 import { CurrencyBar } from "../../components/skills/CurrencyBar.tsx";
+import { EmptySkillData } from "../../components/skills/EmptySkillData.tsx";
+import { StudyingSkills } from "../../components/skills/StudyingSkills.tsx";
 import { TabButtons } from "../../components/skills/TabButtons.tsx";
 import { theme } from "../../constant/theme.ts";
 import { useSkillStore } from "../../stores/skills-store.ts";
 
-const { width } = Dimensions.get("window");
+type TabType = "active" | "studying" | "all";
 
 export default function Skills() {
-  const [currentTab, setCurrentTab] = useState<"active" | "all">("active");
-  const { activeSkills, schoolSkills } = useSkillStore();
+  const [currentTab, setCurrentTab] = useState<TabType>("active");
+  const { activeSkills, allSkills, studyingSkills } = useSkillStore();
 
-  const buyableSkills = useMemo(() => {
-    return schoolSkills.filter(
-      (skill) => !activeSkills.some((active) => active.id === skill.id),
-    );
-  }, [schoolSkills, activeSkills]);
+  const config = useMemo(() => {
+    switch (currentTab) {
+      case "all":
+        return {
+          data: allSkills,
+          Component: AllSkills,
+          emptyDesc:
+            "Visit the skill shop to purchase your first skill and start your empire.",
+        };
+      case "studying":
+        return {
+          data: studyingSkills,
+          Component: StudyingSkills,
+          emptyDesc:
+            "You aren't currently studying anything. Go buy a skill to start learning!",
+        };
+      default:
+        return {
+          data: activeSkills,
+          Component: ActiveSkills,
+          emptyDesc:
+            "You haven't mastered any expertise yet. Head to the shop to begin.",
+        };
+    }
+  }, [currentTab, activeSkills, allSkills, studyingSkills]);
+
+  const isEmpty = config.data.length === 0;
 
   return (
-    <SafeAreaView
-      edges={[]}
-      style={[
-        styles.container,
-        { backgroundColor: theme.colors.backgroundLight },
-      ]}
-    >
+    <SafeAreaView edges={[]} style={styles.container}>
       <CurrencyBar />
-      <ScrollView
-        contentContainerStyle={styles.scrollBody}
+
+      <View style={styles.tabContainer}>
+        <View style={styles.tabTrack}>
+          {(["active", "studying", "all"] as TabType[]).map((tab) => (
+            <TabButtons
+              key={tab}
+              tabId={tab}
+              label={
+                tab === "all"
+                  ? "Buy Skills"
+                  : `${tab.charAt(0).toUpperCase() + tab.slice(1)} Skills`
+              }
+              onSelectTab={() => setCurrentTab(tab)}
+              currentTab={currentTab}
+            />
+          ))}
+        </View>
+      </View>
+
+      <KeyboardAwareScrollView
+        contentContainerStyle={[
+          styles.scrollBody,
+          isEmpty && styles.centerEmpty,
+        ]}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.tabContainer}>
-          <View style={styles.tabTrack}>
-            <TabButtons
-              tabId="active"
-              label="Active Skills"
-              onSelectTab={() => setCurrentTab("active")}
-              currentTab={currentTab}
-            />
-            <TabButtons
-              tabId="all"
-              label="Buy Skills"
-              onSelectTab={() => setCurrentTab("all")}
-              currentTab={currentTab}
-            />
-          </View>
-        </View>
-
-        {currentTab === "all" ? (
-          <UnlockableSkills skills={buyableSkills} />
+        {isEmpty ? (
+          <EmptySkillData
+            description={config.emptyDesc}
+            onCTAPress={() => setCurrentTab("all")}
+          />
         ) : (
-          <ActiveSkills skills={activeSkills} />
+          <config.Component skills={config.data as any} />
         )}
-      </ScrollView>
+      </KeyboardAwareScrollView>
+
       <Navigation />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-
-  scrollBody: { paddingBottom: 100 },
-  tabContainer: { padding: 16, paddingTop: 20 },
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.backgroundLight,
+  },
+  scrollBody: {
+    paddingBottom: 100,
+    flexGrow: 1, // Crucial for vertical centering
+  },
+  centerEmpty: {
+    justifyContent: "center", // Vertically centers EmptySkillData
+  },
+  tabContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 8,
+  },
   tabTrack: {
     flexDirection: "row",
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.white,
     padding: 4,
     borderRadius: 12,
+    gap: 4,
     borderWidth: 1,
     borderColor: "rgba(37, 244, 106, 0.05)",
   },
-
-  lockedCard: {
-    width: (width - 36) / 2,
-    height: 220,
-    borderStyle: "dashed",
-    borderWidth: 2,
-    borderColor: "#e2e8f0",
-    borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(241, 245, 249, 0.5)",
-  },
-  lockIconCircle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#f1f5f9",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  lockedText: {
-    fontSize: 11,
-    color: "#64748b",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-
-  navItem: { flex: 1, justifyContent: "center", alignItems: "center", gap: 4 },
-  navLabel: { fontSize: 11, fontWeight: "500", color: "#499c65" },
-  activeNavLabel: { fontWeight: "bold", color: theme.colors.primary },
 });
