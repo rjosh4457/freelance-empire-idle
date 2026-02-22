@@ -1,0 +1,13 @@
+======= PERKS =======
+xp_bonus
+gig_speed_bonus
+quality_bonus
+stress_reduction
+success_bonus
+energy_reduction
+
+======= GIG Work Category =========
+design,
+illustration
+development
+marketing

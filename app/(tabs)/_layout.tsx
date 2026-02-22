@@ -22,6 +22,12 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="clients"
+        options={{
+          title: "Clients",
+        }}
+      />
+      <Tabs.Screen
         name="shops"
         options={{
           title: "Shops",

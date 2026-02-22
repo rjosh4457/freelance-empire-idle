@@ -1,25 +1,59 @@
 import { useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import {
+  SlideInLeft,
+  SlideInRight,
+  SlideOutLeft,
+  SlideOutRight,
+  createAnimatedComponent,
+} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import { Navigation } from "../../components/common/Navigation.tsx";
+import { TabList } from "../../components/common/TabList.tsx";
 import { ActiveSkills } from "../../components/skills/ActiveSkills.tsx";
 import { AllSkills } from "../../components/skills/AllSkills.tsx";
 import { CurrencyBar } from "../../components/skills/CurrencyBar.tsx";
 import { EmptySkillData } from "../../components/skills/EmptySkillData.tsx";
 import { StudyingSkills } from "../../components/skills/StudyingSkills.tsx";
-import { TabButtons } from "../../components/skills/TabButtons.tsx";
 import { theme } from "../../constant/theme.ts";
 import { useSkillStore } from "../../stores/skills-store.ts";
+import { TabListTypes } from "../../types/common.d.ts";
 
-type TabType = "active" | "studying" | "all";
+const AnimatedView = createAnimatedComponent(View);
 
 export default function Skills() {
-  const [currentTab, setCurrentTab] = useState<TabType>("active");
   const { activeSkills, allSkills, studyingSkills } = useSkillStore();
+  const [activeTab, setActiveTab] = useState<string>("active");
+  const [prevIndex, setPrevIndex] = useState<number>(0);
+
+  const categories: TabListTypes[] = [
+    { id: "active", label: "Active Skills", icon: "school", color: "#fbbf24" },
+    {
+      id: "studying",
+      label: "Studying Skills",
+      icon: "menu-book",
+      color: theme.colors.secondary,
+    },
+    {
+      id: "all",
+      label: "Buy Skills",
+      icon: "storefront",
+      color: theme.colors.primary,
+    },
+  ];
+
+  const currentIndex = categories.findIndex((c) => c.id === activeTab);
+  const isForward = currentIndex > prevIndex;
+
+  const handleTabChange = (tabId: string) => {
+    setPrevIndex(currentIndex);
+    setActiveTab(tabId);
+  };
 
   const config = useMemo(() => {
-    switch (currentTab) {
+    switch (activeTab) {
       case "all":
         return {
           data: allSkills,
@@ -42,7 +76,7 @@ export default function Skills() {
             "You haven't mastered any expertise yet. Head to the shop to begin.",
         };
     }
-  }, [currentTab, activeSkills, allSkills, studyingSkills]);
+  }, [activeTab, activeSkills, allSkills, studyingSkills]);
 
   const isEmpty = config.data.length === 0;
 
@@ -50,23 +84,11 @@ export default function Skills() {
     <SafeAreaView edges={[]} style={styles.container}>
       <CurrencyBar />
 
-      <View style={styles.tabContainer}>
-        <View style={styles.tabTrack}>
-          {(["active", "studying", "all"] as TabType[]).map((tab) => (
-            <TabButtons
-              key={tab}
-              tabId={tab}
-              label={
-                tab === "all"
-                  ? "Buy Skills"
-                  : `${tab.charAt(0).toUpperCase() + tab.slice(1)} Skills`
-              }
-              onSelectTab={() => setCurrentTab(tab)}
-              currentTab={currentTab}
-            />
-          ))}
-        </View>
-      </View>
+      <TabList
+        tabs={categories}
+        onTabChange={(tab) => handleTabChange(tab)}
+        activeTab={activeTab}
+      />
 
       <KeyboardAwareScrollView
         contentContainerStyle={[
@@ -75,14 +97,25 @@ export default function Skills() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {isEmpty ? (
-          <EmptySkillData
-            description={config.emptyDesc}
-            onCTAPress={() => setCurrentTab("all")}
-          />
-        ) : (
-          <config.Component skills={config.data as any} />
-        )}
+        <AnimatedView
+          key={activeTab}
+          entering={
+            isForward ? SlideInRight.duration(250) : SlideInLeft.duration(250)
+          }
+          exiting={
+            isForward ? SlideOutLeft.duration(200) : SlideOutRight.duration(200)
+          }
+          style={{ flex: 1 }}
+        >
+          {isEmpty ? (
+            <EmptySkillData
+              description={config.emptyDesc}
+              onCTAPress={() => handleTabChange("all")}
+            />
+          ) : (
+            <config.Component skills={config.data as any} />
+          )}
+        </AnimatedView>
       </KeyboardAwareScrollView>
 
       <Navigation />
@@ -97,10 +130,10 @@ const styles = StyleSheet.create({
   },
   scrollBody: {
     paddingBottom: 100,
-    flexGrow: 1, // Crucial for vertical centering
+    flexGrow: 1,
   },
   centerEmpty: {
-    justifyContent: "center", // Vertically centers EmptySkillData
+    justifyContent: "center",
   },
   tabContainer: {
     paddingHorizontal: 16,
@@ -109,7 +142,6 @@ const styles = StyleSheet.create({
   },
   tabTrack: {
     flexDirection: "row",
-    backgroundColor: theme.colors.white,
     padding: 4,
     borderRadius: 12,
     gap: 4,

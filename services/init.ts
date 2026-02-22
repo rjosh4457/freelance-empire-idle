@@ -10,12 +10,22 @@ export const initDatabase = async () => {
 
     // Execute Schema
     for (const statement of SCHEMA) {
-      await db.execAsync(statement);
+      try {
+        await db.execAsync(statement);
+      } catch (err) {
+        console.log("FAILED STATEMENT:", statement);
+        throw err;
+      }
     }
 
     // Execute Seeds
     for (const seed of SEED_DATA) {
-      await db.runAsync(seed);
+      try {
+        await db.runAsync(seed);
+      } catch (err) {
+        console.log("❌ FAILED SEED:", seed);
+        throw err;
+      }
     }
 
     await verifyTables(db);

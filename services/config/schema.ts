@@ -4,8 +4,9 @@ export const SCHEMA = [
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     level INTEGER DEFAULT 1,
     company_name TEXT NOT NULL,
-    money REAL DEFAULT 0,
-    xp INTEGER DEFAULT 0,
+    money REAL DEFAULT 5000,
+    expertise INTEGER DEFAULT 0,
+    max_expertise INTEGER DEFAULT 100,
     reputation INTEGER DEFAULT 0,
     energy INTEGER DEFAULT 100,
     max_energy INTEGER DEFAULT 100,
@@ -28,6 +29,8 @@ export const SCHEMA = [
     is_owned INTEGER DEFAULT 0,            -- 0 = not owned, 1 = owned
     required_perks TEXT DEFAULT '[]',       -- Display to player if perks achieved
     image TEXT NOT NULL,                   -- File name
+    base_xp INTEGER DEFAULT 100,
+    max_level INTEGER DEFAULT 20,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );`,
   // 3. PLAYER_TOOLS: Junction table for ownership and equipment
@@ -36,6 +39,9 @@ export const SCHEMA = [
     player_id INTEGER NOT NULL,
     tool_id TEXT NOT NULL,
     is_equipped INTEGER DEFAULT 0,
+    level INTEGER DEFAULT 1,
+    base_upgrade_cost INTEGER DEFAULT 0,
+    current_xp INTEGER DEFAULT 0,
     acquired_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE,
     FOREIGN KEY (tool_id) REFERENCES tools(id) ON DELETE CASCADE
@@ -51,7 +57,7 @@ export const SCHEMA = [
     category TEXT,
     learn_duration_minutes INTEGER DEFAULT 0,
     base_xp INTEGER DEFAULT 100,
-    base_upgrade_cost INTEGER DEFAULT 2500,
+    price INTEGER NOT NULL,
     unlock_at INTEGER NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );`,
@@ -61,6 +67,7 @@ export const SCHEMA = [
     player_id INTEGER NOT NULL,
     skill_id TEXT NOT NULL,
     level INTEGER DEFAULT 1,
+    base_upgrade_cost INTEGER DEFAULT 0,
     current_xp INTEGER DEFAULT 0,
     learn_start_time DATETIME,
     learn_end_time DATETIME,
@@ -72,7 +79,7 @@ export const SCHEMA = [
   );`,
   // 6. CLIENTS: Client tiers and reputation requirements
   `CREATE TABLE IF NOT EXISTS clients (
-    id TEXT PRIMARY KEY,                  
+    id TEXT PRIMARY KEY,                
     name TEXT NOT NULL,                          -- tier name
     tier TEXT NOT NULL,                          -- repeat for clarity (small, medium, etc.)
     description TEXT,                     
@@ -82,25 +89,21 @@ export const SCHEMA = [
   );`,
   // 7. GIGS: Available jobs to pick up
   `CREATE TABLE IF NOT EXISTS gigs (
-    id TEXT PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     description TEXT,
     type TEXT NOT NULL,                           -- category (design, dev, marketing, etc.)
-    client_id TEXT,                               -- foreign key to clients
+    client_id TEXT NOT NULL,                      -- foreign key to clients
     required_skill TEXT,                          -- skill required for gig
     required_level INTEGER DEFAULT 1,             -- minimum skill level
     difficulty INTEGER DEFAULT 1,                 -- 1 = easy, 5 = hard
     reward_money REAL NOT NULL,
     reward_xp INTEGER NOT NULL,
     reward_reputation INTEGER NOT NULL,
-    max_reputation INTEGER DEFAULT 0,
     energy_cost INTEGER DEFAULT 0,                -- how much energy it consumes
     stress_increase INTEGER DEFAULT 0,            -- how much stress is added
     duration INTEGER NOT NULL,                    -- in hours or days
     urgency_level TEXT DEFAULT 'normal',          -- normal / high / critical
-    status TEXT DEFAULT 'open',                   -- open / in_progress / completed / failed
-    is_repeatable INTEGER DEFAULT 0,              -- recurring gigs
-    is_special INTEGER DEFAULT 0,                 -- special story/event gigs
     quality_score REAL DEFAULT 0,                 -- performance score
     success_score REAL DEFAULT 0,                 -- final success calculation
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -109,9 +112,9 @@ export const SCHEMA = [
   );`,
   // 8. PLAYER_ACTIVE_GIGS: Current workload
   `CREATE TABLE IF NOT EXISTS player_active_gigs (
-    id TEXT PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     player_id INTEGER NOT NULL,
-    gig_id TEXT NOT NULL,
+    gig_id INTEGER NOT NULL,
     started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     status TEXT DEFAULT 'in_progress',              -- in_progress / paused / failed
     FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE,
@@ -119,22 +122,22 @@ export const SCHEMA = [
   );`,
   // 9. PLAYER_GIGS_LOG: History of finished work
   `CREATE TABLE IF NOT EXISTS player_gigs_log (
-    id TEXT PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     player_id INTEGER NOT NULL,
-    gig_id TEXT NOT NULL,
+    gig_id INTEGER NOT NULL,
     completed_at DATETIME,
     success_score REAL,
     quality_score REAL,
     money_earned REAL,
     reputation_earned INTEGER,
-    FOREIGN KEY (player_id) REFERENCES player(id),
+    FOREIGN KEY (player_id) REFERENCES players(id),
     FOREIGN KEY (gig_id) REFERENCES gigs(id)
   );`,
   // 10. PLAYER_CLIENT_PROGRESS: Relationship status with specific clients
   `CREATE TABLE IF NOT EXISTS player_client_progress (
-    id TEXT PRIMARY KEY,
-    player_id INTEGER NOT NULL,                               -- foreign key to player
-    client_id TEXT NOT NULL,                                -- foreign key to client
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id INTEGER NOT NULL,                     -- foreign key to player
+    client_id TEXT NOT NULL,                        -- foreign key to client
     reputation INTEGER DEFAULT 0,                   -- current reputation with this client
     tier_progress REAL DEFAULT 0,                   -- 0–100%, progress to next tier
     last_gig_completed_at DATETIME,                 -- timestamp of last completed gig
@@ -142,7 +145,7 @@ export const SCHEMA = [
     total_money_earned REAL DEFAULT 0,
     level INTEGER DEFAULT 1,                        -- level for client tier
     perks_unlocked TEXT,                            -- JSON array of perks unlocked
-    FOREIGN KEY (player_id) REFERENCES player(id),
+    FOREIGN KEY (player_id) REFERENCES players(id),
     FOREIGN KEY (client_id) REFERENCES clients(id)
   );`,
   // 11. MILESTONES: Daily achievements
@@ -176,5 +179,4 @@ export const SCHEMA = [
   // INDEXES for performance
   `CREATE INDEX IF NOT EXISTS idx_player_skills_player ON player_skills(player_id);`,
   `CREATE INDEX IF NOT EXISTS idx_player_tools_player ON player_tools(player_id);`,
-  `CREATE INDEX IF NOT EXISTS idx_gigs_status ON gigs(status);`,
 ];

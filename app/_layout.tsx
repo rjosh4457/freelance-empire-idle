@@ -13,12 +13,13 @@ import { useGlobalModal } from "../stores/modal-store.ts";
 import { usePlayerStore } from "../stores/player-store.ts";
 import { useSkillStore } from "../stores/skills-store.ts";
 import { useToolStore } from "../stores/tools-store.ts";
+import { useClientStore } from "../stores/client-store.ts";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [appReady, setAppReady] = useState(false);
   const router = useRouter();
-  const { isOpen, skill, closeBuySkill } = useGlobalModal();
+  const { isOpen, skill, closeModal } = useGlobalModal();
   const { updateMoney } = usePlayerStore();
   const { buySkill } = useSkillStore();
   const getPlayerSkills = useSkillStore((state) => state.getPlayerSkills);
@@ -26,7 +27,8 @@ export default function RootLayout() {
   const getPlayer = usePlayerStore((state) => state.getPlayer);
   const getMilestones = useMilestoneStore((state) => state.getMilestones);
   const player = usePlayerStore((state) => state.player);
-  const { getAllTools } = useToolStore();
+  const { getAllTools, getPlayerTools } = useToolStore();
+  const { getAllClients } = useClientStore();
   useEffect(() => {
     async function setup() {
       try {
@@ -42,6 +44,8 @@ export default function RootLayout() {
           getMilestones(),
           getPlayerSkills(),
           getAllTools([]),
+          getPlayerTools(),
+          getAllClients(),
         ]);
         await getAllSkills();
       } catch (error) {
@@ -67,8 +71,7 @@ export default function RootLayout() {
   const handleBuySkill = async () => {
     if (!skill || !player) return;
 
-    const cost = skill.base_upgrade_cost;
-    const newBalance = player.money - cost;
+    const newBalance = player.money - skill.price;
 
     const skillRes = await buySkill(skill);
     if (skillRes.success) {
@@ -76,12 +79,12 @@ export default function RootLayout() {
 
       if (moneyRes.success) {
         updateMoney(newBalance);
-        closeBuySkill();
+        closeModal();
       } else {
-        alert("Error saving transaction. Money not deducted.");
+        console.log("Error saving transaction. Money not deducted.");
       }
     } else {
-      alert(skillRes.error || "Purchase failed.");
+      console.log("Purchase failed.", skillRes.error);
     }
   };
 
@@ -91,6 +94,7 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Protected guard={!!player}>
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(protected)" />
         </Stack.Protected>
         <Stack.Screen name="onboarding" />
       </Stack>
@@ -100,11 +104,11 @@ export default function RootLayout() {
         <SkillPurchaseModal
           isVisible={isOpen}
           skillName={skill.name}
-          price={skill.base_upgrade_cost}
+          price={skill.price}
           icon={skill.icon}
           color={skill.color}
           onConfirm={handleBuySkill}
-          onCancel={closeBuySkill}
+          onCancel={closeModal}
         />
       )}
     </View>

@@ -16,7 +16,7 @@ export const computeMaxXp = (base_xp: number, level: number): number => {
 export const computeUpgradeCost = (
   baseCost: number,
   level: number,
-  growthRate: number = 1.45,
+  growthRate: number = 1.05,
 ): number => {
   // Formula: Base * (Growth ^ CurrentLevel)
   // Level 1 -> Level 2 cost uses level 1 in the exponent
@@ -25,3 +25,41 @@ export const computeUpgradeCost = (
   // Round to the nearest 10 to keep the UI clean (e.g., 1,253 -> 1,250)
   return Math.round(cost / 10) * 10;
 };
+
+type XpConfig = {
+  growthRate: number; // exponential growth (1.4 - 1.8 recommended)
+  baseReward: number; // base XP reward per action
+  levelScaling: number; // scaling factor for tool/player level (0.02 - 0.05)
+};
+
+const defaultConfig: XpConfig = {
+  growthRate: 1.6,
+  baseReward: 100,
+  levelScaling: 0.25,
+};
+
+export const computeXpGained = (
+  level: number,
+  difficulty: number = 1, // 1 For Tool/Player Upgrade, 2 for Daily Milestone, 3 for Gig Completion
+  config: XpConfig = defaultConfig,
+) => {
+  const levelMultiplier = 1 + level * config.levelScaling;
+
+  return Math.floor(config.baseReward * difficulty * levelMultiplier);
+};
+
+type AnyPerks = Record<string, number>;
+
+export function getScaledPerks(
+  perks: AnyPerks,
+  level: number,
+  growthPerLevel: number = 0.05,
+) {
+  const result: Record<string, number> = {};
+
+  Object.entries(perks).forEach(([key, value]) => {
+    const scaled = value * (1 + (level - 1) * growthPerLevel);
+    result[key] = Math.round(scaled * 100) / 100;
+  });
+  return result;
+}

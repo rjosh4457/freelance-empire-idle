@@ -3,6 +3,15 @@ type BasePlayerType = {
   company_name: string;
   level: number;
   money: number;
-  xp: number;
+  expertise: number;
+  max_expertise: number;
+  energy: number;
+  max_energy: number;
+  stress: number;
+  max_stress: number;
   reputation: number;
 };
+
+type PlayerGigType = {
+  
+}

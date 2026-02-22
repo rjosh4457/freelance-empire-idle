@@ -1,42 +1,81 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import { useState } from "react"; // Added for tab logic
+import { useMemo, useState } from "react"; // Added for tab logic
+import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+  createAnimatedComponent,
+  SlideInLeft,
+  SlideInRight,
+} from "react-native-reanimated";
+import { TabList } from "../../components/common/TabList.tsx";
+import ToolPurchaseModal from "../../components/modals/ToolPurchaseModal.tsx";
 import { ShopItemCard } from "../../components/shops/cards/ShopItemCard.tsx";
 import { theme } from "../../constant/theme.ts";
+import { updatePlayerBalance } from "../../services/player-service.ts";
+import { useGlobalModal } from "../../stores/modal-store.ts";
 import { usePlayerStore } from "../../stores/player-store.ts";
 import { useToolStore } from "../../stores/tools-store.ts";
-import {
-  formatCurrency,
-  getRandomColor
-} from "../../utils/helper.ts";
+import { TabListTypes } from "../../types/common.d.ts";
+import { formatCurrency, getRandomColor } from "../../utils/helper.ts";
 
 const { width } = Dimensions.get("window");
-
+const AnimatedView = createAnimatedComponent(View);
 export default function Shops() {
-  const { player } = usePlayerStore();
-  const { tools } = useToolStore();
-  const [activeTab, setActiveTab] = useState("All");
-
-  const categories = [
+  const { player, updateMoney } = usePlayerStore();
+  const { tools, saveNewTool } = useToolStore();
+  const [activeTab, setActiveTab] = useState("all");
+  const [prevIndex, setPrevIndex] = useState(0);
+  const { isOpen, tool, closeModal } = useGlobalModal();
+  const openModal = useGlobalModal((state) => state.openBuyTool);
+  const categories: TabListTypes[] = [
     { id: "all", label: "All", icon: "grid-view", color: theme.colors.primary },
-    { id: "furniture", label: "Furniture", icon: "chair", color: "#fbbf24" },
-    { id: "tech", label: "Tech", icon: "devices", color: "#3b82f6" },
-    { id: "decor", label: "Decor", icon: "palette", color: "#f43f5e" },
+    { id: "office", label: "Office", icon: "chair", color: "#fbbf24" },
+    {
+      id: "hardware",
+      label: "Hardware",
+      icon: "devices",
+      color: theme.colors.secondary,
+    },
+    { id: "software", label: "Software", icon: "terminal", color: "#f43f5e" },
+    { id: "utility", label: "Utility", icon: "build", color: "#513ff4" },
   ];
+
+  const currentIndex = categories.findIndex((c) => c.id === activeTab);
+  const isForward = currentIndex > prevIndex;
+
+  const handleTabChange = (tabId: string) => {
+    setPrevIndex(currentIndex);
+    setActiveTab(tabId);
+  };
+  const handleBuyItem = async () => {
+    if (!tool || !player) return;
+
+    const cost = tool.price;
+    const newBalance = player.money - cost;
+    const res = await saveNewTool(tool);
+
+    if (res.success) {
+      const moneyRes = await updatePlayerBalance(player.id, newBalance);
+      if (moneyRes.success) {
+        updateMoney(newBalance);
+        closeModal();
+      } else {
+        console.log("Error saving transaction. Money not deducted.");
+      }
+    } else {
+      console.log("Error purchasing tool:", res.error);
+    }
+  };
+  const filteredTools = useMemo(() => {
+    if (activeTab === "all") return tools;
+    return tools.filter((tool) => tool.category.toLowerCase() === activeTab);
+  }, [activeTab, tools]);
 
   return (
     <View style={screenStyles.container}>
       {/* Header */}
       <View style={screenStyles.header}>
         <View>
-          <Text style={screenStyles.headerTitle}>SM Galleria</Text>
+          <Text style={screenStyles.headerTitle}>Mall</Text>
           <Text style={screenStyles.headerSub}>FREELANCE EMPIRE</Text>
         </View>
         <View style={screenStyles.balanceBadge}>
@@ -51,60 +90,52 @@ export default function Shops() {
         </View>
       </View>
 
-      <View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={screenStyles.tabContainer}
-        >
-          {categories.map((cat) => (
-            <TouchableOpacity
-              key={cat.id}
-              onPress={() => setActiveTab(cat.label)}
-              style={[
-                screenStyles.tabButton,
-                activeTab === cat.label && screenStyles.tabButtonActive,
-              ]}
-            >
-              <MaterialIcons
-                name={cat.icon as any}
-                size={20}
-                color={activeTab === cat.label ? "#0d1c12" : cat.color}
-              />
-              <Text
-                style={[
-                  screenStyles.tabText,
-                  activeTab === cat.label && screenStyles.tabTextActive,
-                ]}
-              >
-                {cat.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
+      <TabList
+        tabs={categories}
+        onTabChange={(tabId) => handleTabChange(tabId)}
+        activeTab={activeTab}
+      />
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={screenStyles.gridContainer}>
-          <View style={screenStyles.grid}>
-            {tools.map((item) => (
-              <View key={item.id} style={screenStyles.gridItem}>
-                <ShopItemCard
-                  {...item}
-                  color={getRandomColor()}
-                  onBuy={() => console.log("buy", item.name)}
-                />
-              </View>
-            ))}
+        <AnimatedView
+          key={activeTab}
+          entering={
+            isForward ? SlideInRight.duration(250) : SlideInLeft.duration(250)
+          }
+          style={screenStyles.gridContainer}
+        >
+          <View style={screenStyles.gridContainer}>
+            <View style={screenStyles.grid}>
+              {filteredTools.map((item) => (
+                <View key={item.id} style={screenStyles.gridItem}>
+                  <ShopItemCard
+                    {...item}
+                    isOwned={Boolean(item.is_owned)}
+                    color={getRandomColor()}
+                    onBuy={() => openModal(item)}
+                  />
+                </View>
+              ))}
+            </View>
           </View>
-        </View>
+        </AnimatedView>
       </ScrollView>
+      {tool && (
+        <ToolPurchaseModal
+          isVisible={isOpen}
+          toolName={tool.name}
+          price={tool.price}
+          image={tool.image}
+          onConfirm={handleBuyItem}
+          onCancel={closeModal}
+        />
+      )}
     </View>
   );
 }
 
 const screenStyles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f5f8f6" },
+  container: { flex: 1, backgroundColor: theme.colors.backgroundLight },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -154,12 +185,13 @@ const screenStyles = StyleSheet.create({
   },
   tabButtonActive: {
     backgroundColor: theme.colors.primary,
+
     borderColor: theme.colors.primary,
   },
   tabText: { fontSize: 14, fontWeight: "600", color: "#64748b" },
-  tabTextActive: { color: "#0d1c12" },
+  tabTextActive: { color: theme.colors.black },
 
-  gridContainer: { paddingHorizontal: 16, paddingBottom: 100 },
+  gridContainer: { paddingHorizontal: 8, paddingBottom: 50 },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "700",

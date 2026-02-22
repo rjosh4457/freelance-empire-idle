@@ -64,7 +64,8 @@ export const fetchActiveSkills = async (): Promise<
           s.icon,
           s.color,
           s.base_xp,
-          s.base_upgrade_cost,
+          ps.base_upgrade_cost,
+          s.price,
           s.learn_duration_minutes,
           s.unlock_at,
           ps.created_at
@@ -109,6 +110,7 @@ export const saveNewSkill = async (
   playerId: number,
   startAt: string,
   finishAt: string,
+  upgradeCost: number,
 ): Promise<DBResponse<string>> => {
   const start = performance.now();
   try {
@@ -116,9 +118,9 @@ export const saveNewSkill = async (
     const entryId = `${playerId}_${skillId}`;
 
     const result = await db.runAsync(
-      `INSERT OR IGNORE INTO player_skills (id, player_id, skill_id, level, current_xp, learn_start_time, learn_end_time) 
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [entryId, playerId, skillId, 1, 0, startAt, finishAt],
+      `INSERT OR IGNORE INTO player_skills (id, player_id, skill_id, level, current_xp, learn_start_time, learn_end_time, base_upgrade_cost) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [entryId, playerId, skillId, 1, 0, startAt, finishAt, upgradeCost],
     );
 
     if (result.changes > 0) {

@@ -22,16 +22,14 @@ export const AllSkills = ({ skills }: AllSkillsProps) => {
       <View style={styles.grid}>
         {player &&
           skills?.map((skill) => {
-            const isBuyable =
-              skill.base_upgrade_cost <= player?.money &&
-              skill.unlock_at <= player.level;
+            const isBuyable = skill.unlock_at <= player.level;
             return (
               <AllSkillCard
                 key={skill.id}
                 icon={skill.icon}
                 title={skill.name}
                 sub={skill.description}
-                price={skill.base_upgrade_cost}
+                price={skill.price}
                 unlock_at={skill.unlock_at}
                 color={skill.color}
                 isBuyable={isBuyable}

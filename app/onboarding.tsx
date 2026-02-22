@@ -1,6 +1,5 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -72,23 +71,10 @@ export default function Onboarding() {
     }
 
     setIsSubmitting(true);
+    const response = await createProfile({ company_name: studioName });
 
-    const newPlayer = {
-      company_name: studioName ?? "Player 1",
-      level: 1,
-      money: 5000,
-      xp: 0,
-      reputation: 10,
-    };
-
-    const response = await createProfile(newPlayer);
-
-    if (response.data) {
-      const player: BasePlayerType = {
-        id: response.data,
-        ...newPlayer,
-      };
-      setPlayer(player);
+    if (response.success && response.data) {
+      setPlayer(response.data);
     }
   };
 

@@ -8,3 +8,10 @@ type DBResponse<T> = {
   data?: T;
   error?: string;
 };
+
+type TabListTypes = {
+  id: string;
+  label: string;
+  icon: IconNameMC;
+  color: string;
+};

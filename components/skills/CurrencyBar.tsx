@@ -36,9 +36,7 @@ export const CurrencyBar = () => {
 
 const styles = StyleSheet.create({
   headerArea: {
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(37, 244, 106, 0.1)",
+    backgroundColor: theme.colors.backgroundLight,
   },
   headerContent: {
     flexDirection: "row",

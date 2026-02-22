@@ -14,6 +14,7 @@ import { formatCurrency } from "../../../utils/helper.ts";
 
 interface ShopItemProps extends BaseToolType {
   isLocked?: boolean;
+  isOwned?: boolean;
   color?: string;
   onBuy: () => void;
 }
@@ -24,6 +25,7 @@ export const ShopItemCard = ({
   perks,
   price,
   isLocked,
+  isOwned,
   description,
   onBuy,
   color,
@@ -32,7 +34,7 @@ export const ShopItemCard = ({
   const [showPerk, setShowPerk] = useState(false);
 
   return (
-    <View style={[styles.card, isLocked && styles.lockedCard]}>
+    <View style={[styles.card, (isLocked || isOwned) && styles.lockedCard]}>
       <View style={styles.topSection}>
         {/* Image Container */}
         <View
@@ -68,15 +70,19 @@ export const ShopItemCard = ({
       <View style={styles.buttonsRow}>
         {/* Buy Button */}
         <TouchableOpacity
-          style={[styles.buyBtn, isLocked && styles.lockedBtn]}
+          style={[styles.buyBtn, (isLocked || isOwned) && styles.lockedBtn]}
           onPress={onBuy}
-          disabled={isLocked}
+          disabled={isLocked || isOwned}
           activeOpacity={0.8}
         >
           {isLocked ? (
             <>
               <MaterialIcons name="lock" size={16} color="#94a3b8" />
               <Text style={styles.lockedBtnText}>LOCKED</Text>
+            </>
+          ) : isOwned ? (
+            <>
+              <Text style={styles.lockedBtnText}>OWNED</Text>
             </>
           ) : (
             <>
@@ -128,7 +134,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 12,
     borderWidth: 1,
-    borderColor: theme.colors.white,
+    borderColor: "rgba(37, 244, 106, 0.05)",
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -148,13 +154,13 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 8,
+    marginBottom: 4,
   },
-  itemImage: { width: "80%", height: "80%" },
+  itemImage: { width: "100%", height: "100%" },
   info: { width: "100%" },
   title: { fontSize: 14, fontWeight: "800", color: theme.colors["black"] },
   description: {
-    marginTop: 2,
+    marginTop: 0,
   },
   descriptionText: { fontSize: 10, fontWeight: "800" },
   buttonsRow: {

@@ -33,7 +33,7 @@ export const AllSkillCard = ({
   onPurchased,
 }: SkillCardProps) => {
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, !isBuyable && styles.lockedCard]}>
       <View style={[styles.statusTag, { backgroundColor: color }]}>
         <Text style={styles.statusTagText}>Req: LVL {unlock_at}</Text>
       </View>
@@ -48,20 +48,25 @@ export const AllSkillCard = ({
       </View>
 
       <TouchableOpacity
-        style={[
-          styles.actionBtn,
-          isBuyable
-            ? { backgroundColor: theme.colors.primary }
-            : styles.disabledBtn,
-        ]}
+        style={[styles.actionBtn, !isBuyable && styles.lockedBtn]}
         onPress={onPurchased}
         disabled={!isBuyable}
       >
-        <Text
-          style={[styles.actionBtnText, !isBuyable && { color: "#94a3b8" }]}
-        >
-          {isBuyable ? `$${formatCurrency(price)} Learn` : "Locked"}
-        </Text>
+        {isBuyable ? (
+          <>
+            <MaterialIcons
+              name="shopping-cart"
+              size={16}
+              color={theme.colors.white}
+            />
+            <Text style={styles.buyBtnText}>${formatCurrency(price)}</Text>
+          </>
+        ) : (
+          <>
+            <MaterialIcons name="lock" size={16} color="#94a3b8" />
+            <Text style={styles.lockedBtnText}>LEVEL REQUIRED</Text>
+          </>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -69,13 +74,21 @@ export const AllSkillCard = ({
 const styles = StyleSheet.create({
   card: {
     width: (width - 36) / 2,
-    backgroundColor: theme.colors["white"],
+    backgroundColor: theme.colors.white,
     borderRadius: 16,
     padding: 12,
     borderWidth: 1,
     borderColor: "rgba(37, 244, 106, 0.05)",
     elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    justifyContent: "space-between",
+    minHeight: 150,
+    position: "relative",
   },
+  lockedCard: { opacity: 0.7 },
   statusTag: {
     position: "absolute",
     top: 10,
@@ -98,12 +111,18 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 16, fontWeight: "bold", color: "#18181b" },
   cardReq: { fontSize: 10, fontWeight: "600", color: theme.colors.success },
   actionBtn: {
-    width: "100%",
-    paddingHorizontal: 12,
-    borderRadius: 12,
+    flex: 1,
+    flexDirection: "row",
+    backgroundColor: theme.colors.primary,
+    height: 40,
+    borderRadius: 10,
     alignItems: "center",
-    paddingVertical: 8,
+    justifyContent: "center",
+    gap: 6,
   },
+  buyBtnText: { color: theme.colors.white, fontWeight: "800", fontSize: 13 },
+  lockedBtnText: { color: "#94a3b8", fontWeight: "700", fontSize: 12 },
+  lockedBtn: { backgroundColor: theme.colors.white },
   disabledBtn: { backgroundColor: "#f1f5f9" },
-  actionBtnText: { fontSize: 16, fontWeight: "bold", color: "#fff" },
+  actionBtnText: { color: theme.colors.white, fontWeight: "800", fontSize: 13 },
 });

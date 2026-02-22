@@ -22,7 +22,6 @@ export const ActiveSkills = ({ skills }: ActiveSkillProps) => {
           skills.map((skill) => {
             const xp = computeMaxXp(skill.base_xp, skill.level);
             const level_progress = skill.current_xp / xp;
-            const can_upgrade = player.money < skill.base_upgrade_cost;
             const upgrade_cost = computeUpgradeCost(
               skill.base_upgrade_cost,
               skill.level,
@@ -36,9 +35,8 @@ export const ActiveSkills = ({ skills }: ActiveSkillProps) => {
                 sub={skill.description}
                 color={skill.color}
                 progress={level_progress}
-                disabled={can_upgrade}
                 price={String(upgrade_cost)}
-                onUpgrade={() => upgradeSkill(skill.id, 50)}
+                onUpgrade={() => upgradeSkill(skill.id, upgrade_cost)}
               />
             );
           })}

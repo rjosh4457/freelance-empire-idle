@@ -1,6 +1,6 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { theme } from "../../constant/theme.ts";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { theme } from "../../../constant/theme.ts";
 
 export const OfficeStage = () => {
   return (
@@ -8,11 +8,9 @@ export const OfficeStage = () => {
       <View style={styles.stageInner}>
         {/* Background Illustration */}
         <Image
-          source={{
-            uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuC4qbCXtNjvKrGzAfpWVjKbaZSmxMaUX5rPRliHTsxLsvQLIQwr8Kss4mMoYOiHzf2rDg7ypnVwV57vj_DJ0TWkSyAzotD0Pwm76GzKuUkiYQVf-kkzdHuIvR91xQGak0TKwb-bsFRBl6MyGIK_YVDudZNUntmDghVioPRh_-EGGfyTVZWiNMduist6U6b24T7IIbDOe-EGKvDvjYqeGlvtvHpxprsq_onrsXO0Awq-JPvOvkwz7gQb5fR_fglsDgPs06F5a2BOuasN",
-          }}
+          source={require("../../../assets/player/working-player.png")}
           style={styles.stageImage}
-          resizeMode="cover"
+          resizeMode="contain"
         />
         {/* Floating Project HUD */}
         <View style={styles.projectHud}>
@@ -60,7 +58,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
   },
-  stageImage: { ...StyleSheet.absoluteFillObject },
+
+  stageImage: {
+    width: "100%",
+    height: "100%",
+  },
   projectHud: {
     position: "absolute",
     top: "25%",

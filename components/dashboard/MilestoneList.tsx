@@ -6,7 +6,7 @@ import { MilestoneCard } from "./cards/MilestoneCard.tsx";
 export const MilestoneList = () => {
   const { milestones } = useMilestoneStore();
   console.log(milestones);
-  
+
   return (
     <View style={styles.milestoneSection}>
       <View style={styles.sectionTitleRow}>

@@ -1,5 +1,20 @@
 // @/constants/Assets.ts
 export const ToolImages: Record<string, any> = {
   "ergonomic-chair": require("../assets/tools/ergonomic-chair.png"),
-  "noice-cancelling-headset": require("../assets/tools/noice-cancelling-headset.png"),
+  "noise-cancelling-headset": require("../assets/tools/noise-cancelling-headset.png"),
+  "air-conditioner": require("../assets/tools/air-conditioner.png"),
+  "coffee-machine": require("../assets/tools/coffee-machine.png"),
+  "desk-lamp": require("../assets/tools/desk-lamp.png"),
+  "external-monitor": require("../assets/tools/external-monitor.png"),
+  "foot-rest": require("../assets/tools/foot-rest.png"),
+  laptop: require("../assets/tools/laptop.png"),
+  "mechanical-keyboard": require("../assets/tools/mechanical-keyboard.png"),
+  "mini-fridge": require("../assets/tools/mini-fridge.png"),
+  "office-plant": require("../assets/tools/office-plant.png"),
+  "precision-mouse": require("../assets/tools/precision-mouse.png"),
+  "standing-desk": require("../assets/tools/standing-desk.png"),
+  "water-dispenser": require("../assets/tools/water-dispenser.png"),
+  webcam: require("../assets/tools/webcam.png"),
+  whiteboard: require("../assets/tools/whiteboard.png"),
+  "graphic-tablet": require("../assets/tools/graphic-tablet.png"),
 };

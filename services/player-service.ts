@@ -37,8 +37,8 @@ export const getProfile = async (): Promise<DBResponse<BasePlayerType>> => {
 };
 
 export const createProfile = async (
-  player: Omit<BasePlayerType, "id">,
-): Promise<DBResponse<number>> => {
+  player: Pick<BasePlayerType, "company_name">,
+): Promise<DBResponse<BasePlayerType>> => {
   const start = performance.now();
   console.log(
     `%c[SQL] ⚡ START | createProfile | Name: ${player.company_name}`,
@@ -47,20 +47,28 @@ export const createProfile = async (
 
   try {
     const db = await getDb();
-    const { company_name, level, money, xp, reputation } = player;
+    const { company_name } = player;
 
     const result = await db.runAsync(
-      `INSERT INTO players (company_name, level, money, xp, reputation) 
-       VALUES (?, ?, ?, ?, ? )`,
-      [company_name, level, money, xp, reputation],
+      `INSERT INTO players (company_name) 
+       VALUES (?)`,
+      [company_name],
     );
 
+    const newPlayerData = await db.getFirstAsync<BasePlayerType>(
+      `SELECT * FROM players WHERE id = ?`,
+      [result.lastInsertRowId],
+    );
+
+    if (!newPlayerData) {
+      throw new Error("Failed to retrieve player after creation.");
+    }
     logSQL("createProfile", true, start, {
       lastInsertRowId: result.lastInsertRowId,
     });
     return {
       success: true,
-      data: result.lastInsertRowId,
+      data: newPlayerData,
     };
   } catch (error) {
     logSQL("createProfile", false, start, error);
@@ -96,4 +104,11 @@ export const updatePlayerBalance = async (
     logSQL("updatePlayerBalance", false, start, error);
     return { success: false, error: "Failed to sync balance to storage." };
   }
+};
+
+export const getPlayerGigs = async () => {
+  const start = performance.now();
+  try {
+    const db = await getDb();
+  } catch (error) {}
 };

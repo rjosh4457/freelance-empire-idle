@@ -26,7 +26,7 @@ export const Navigation = () => {
       <NavItem
         icon="group"
         label="Clients"
-        path="/skills"
+        path="/clients"
         active={isActive("/clients")}
       />
       <NavItem

@@ -29,7 +29,13 @@ export const TabButtons = ({
 };
 
 const styles = StyleSheet.create({
-  tab: { flex: 1, paddingVertical: 10, alignItems: "center", borderRadius: 10 },
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: "center",
+    borderRadius: 10,
+    backgroundColor: theme.colors.white,
+  },
   activeTab: { backgroundColor: theme.colors.primary, elevation: 2 },
   activeTabText: { color: "#fff", fontWeight: "bold", fontSize: 14 },
   tabText: { color: "#499c65", fontWeight: "bold", fontSize: 14 },

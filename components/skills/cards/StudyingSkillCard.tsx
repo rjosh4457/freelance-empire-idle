@@ -37,8 +37,6 @@ export const StudyingSkillCard = ({
   const { getPlayerSkills } = useSkillStore();
 
   useEffect(() => {
-    console.log("hehe");
-
     const timer = setInterval(async () => {
       const remaining = getTimeRemaining(finishAt);
       const currentProgress = getStudyProgress(startedAt, finishAt);
@@ -112,7 +110,6 @@ const styles = StyleSheet.create({
     padding: 12,
     borderWidth: 1,
     borderColor: "rgba(37, 244, 106, 0.05)",
-    elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,

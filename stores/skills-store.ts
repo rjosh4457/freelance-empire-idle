@@ -6,7 +6,7 @@ import {
   updateSkillLevel,
 } from "../services/skills-service.ts";
 import { ActiveSkillType, BaseSkillType } from "../types/skills.d.ts";
-import { computeMaxXp } from "../utils/config.ts";
+import { computeMaxXp, computeXpGained } from "../utils/config.ts";
 import { getFinishAt } from "../utils/helper.ts";
 import { usePlayerStore } from "./player-store.ts";
 
@@ -21,7 +21,7 @@ interface SkillState {
   ) => Promise<{ success: boolean; error?: string }>;
   getPlayerSkills: () => Promise<void>;
   getAllSkills: () => Promise<void>;
-  upgradeSkill: (skillId: string, xpGained: number) => Promise<void>;
+  upgradeSkill: (skillId: string, cost: number) => Promise<void>;
 }
 
 export const useSkillStore = create<SkillState>((set, get) => ({
@@ -74,14 +74,18 @@ export const useSkillStore = create<SkillState>((set, get) => ({
     const now = new Date();
 
     if (!player) return { success: false, error: "Player not found" };
+    if (player.money < skill.price) {
+      return { success: false, error: "Insufficient funds" };
+    }
     const tempId = `temp-${Date.now()}`;
     const finishAt = getFinishAt(skill.learn_duration_minutes);
-
+    const baseUpgradeCost = Math.floor(skill.price * 0.3);
     const newBoughtSkill: ActiveSkillType = {
       ...skill,
       id: tempId,
       level: 1,
       current_xp: 0,
+      base_upgrade_cost: baseUpgradeCost,
       learn_start_time: now.toISOString(),
       learn_end_time: finishAt,
     };
@@ -96,6 +100,7 @@ export const useSkillStore = create<SkillState>((set, get) => ({
       player.id,
       now.toISOString(),
       finishAt,
+      baseUpgradeCost,
     );
 
     if (res.success && res.data) {
@@ -111,17 +116,23 @@ export const useSkillStore = create<SkillState>((set, get) => ({
     }
   },
 
-  upgradeSkill: async (skillId, xpGained) => {
+  upgradeSkill: async (skillId, cost) => {
     // Get current state for calculation and potential rollback
     const previousSkills = get().activeSkills;
     const skillToUpgrade = previousSkills.find((s) => s.id === skillId);
-    console.log(skillId);
+    const player = usePlayerStore.getState().player;
 
-    if (!skillToUpgrade) return;
+    if (!skillToUpgrade || !player) return;
+    if (player.money < cost) {
+      console.error("Insufficient funds for upgrade");
+      return;
+    }
 
     // Calculate new values outside the 'set' for clean logic
     let newLevel = skillToUpgrade.level;
-    let newXp = (skillToUpgrade.current_xp || 0) + xpGained;
+    let newXp =
+      (skillToUpgrade.current_xp || 0) +
+      computeXpGained(skillToUpgrade.level, 1);
 
     while (true) {
       const maxXpForCurrentLevel = computeMaxXp(

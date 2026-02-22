@@ -1,9 +1,11 @@
+import { router } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Navigation } from "../../components/common/Navigation.tsx";
-import { Header } from "../../components/dashboard/Header.tsx";
+import { DeskEmptyCard } from "../../components/dashboard/cards/DeskEmptyCard.tsx";
+import { GameHeader } from "../../components/dashboard/GameHeader.tsx";
 import { MilestoneList } from "../../components/dashboard/MilestoneList.tsx";
-import { OfficeStage } from "../../components/dashboard/OfficeStage.tsx";
+import { QuickActions } from "../../components/dashboard/QuickActions.tsx";
 import { StatsOverview } from "../../components/dashboard/StatsOverview.tsx";
 import { theme } from "../../constant/theme.ts";
 
@@ -16,13 +18,17 @@ export default function Index() {
         { backgroundColor: theme.colors.backgroundLight },
       ]}
     >
-      <Header />
+      <GameHeader />
       <ScrollView
         contentContainerStyle={styles.scrollBody}
         showsVerticalScrollIndicator={false}
       >
         <StatsOverview />
-        <OfficeStage />
+        <DeskEmptyCard
+          onFindGigs={() => router.replace("./(protected)/marketplace")}
+        />
+        {/* <OfficeStage /> */}
+        <QuickActions />
         <MilestoneList />
       </ScrollView>
 
