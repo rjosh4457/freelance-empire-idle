@@ -1,5 +1,5 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -25,9 +25,35 @@ export default function Marketplace() {
   const { player } = usePlayerStore();
   const { clients } = useClientStore();
 
+  const [timeLeft, setTimeLeft] = useState<string>("--");
+
   useEffect(() => {
+    if (!gigs.length) return;
+
+    const resetTime = new Date(gigs[0].expires_at).getTime();
+    const interval = setInterval(() => {
+      const diff = resetTime - Date.now();
+
+      if (diff <= 0) {
+        getAllGigs(clients);
+        clearInterval(interval);
+        return;
+      }
+
+      const minutes = Math.floor(diff / 1000 / 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      setTimeLeft(`${minutes}m ${seconds}s`);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [gigs]);
+
+  useEffect(() => {
+    if (!clients || !clients.length) return;
+
     getAllGigs(clients);
-  }, []);
+  }, [clients]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -73,7 +99,7 @@ export default function Marketplace() {
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Available Gigs</Text>
           <View style={styles.badge}>
-            <Text style={styles.badgeText}>8 NEW TODAY</Text>
+            <Text style={styles.badgeText}>Reset in {timeLeft}</Text>
           </View>
         </View>
 
@@ -81,7 +107,6 @@ export default function Marketplace() {
           <GigCard
             key={gig.id}
             title={gig.name}
-            category={gig.required_skill}
             difficulty={getDifficultyLabel(gig.difficulty)}
             rating={gig.difficulty}
             reward={`$${gig.reward_money.toFixed(2)}`}

@@ -120,6 +120,7 @@ export const useSkillStore = create<SkillState>((set, get) => ({
     // Get current state for calculation and potential rollback
     const previousSkills = get().activeSkills;
     const skillToUpgrade = previousSkills.find((s) => s.id === skillId);
+    const updateMoney = usePlayerStore.getState().updateMoney;
     const player = usePlayerStore.getState().player;
 
     if (!skillToUpgrade || !player) return;
@@ -127,6 +128,10 @@ export const useSkillStore = create<SkillState>((set, get) => ({
       console.error("Insufficient funds for upgrade");
       return;
     }
+
+    /** Update Player Money, Local Only */
+    const newBalance = player.money - cost;
+    updateMoney(newBalance);
 
     // Calculate new values outside the 'set' for clean logic
     let newLevel = skillToUpgrade.level;

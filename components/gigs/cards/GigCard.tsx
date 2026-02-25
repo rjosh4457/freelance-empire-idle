@@ -4,7 +4,6 @@ import { theme } from "../../../constant/theme.ts";
 
 interface GigCardProps {
   title: string;
-  category: string;
   difficulty: string;
   rating: number;
   reward: string;
@@ -16,7 +15,6 @@ interface GigCardProps {
 
 export const GigCard = ({
   title,
-  category,
   difficulty,
   rating,
   reward,
@@ -41,7 +39,6 @@ export const GigCard = ({
                 color={s <= rating ? "#fbbf24" : "#e2e8f0"}
               />
             ))}
-            <Text style={styles.difficultyText}>{difficulty}</Text>
           </View>
         </View>
         <View
@@ -51,7 +48,7 @@ export const GigCard = ({
           ]}
         >
           <Text style={[styles.categoryText, { color: accentColor }]}>
-            {category}
+            {difficulty}
           </Text>
         </View>
       </View>
