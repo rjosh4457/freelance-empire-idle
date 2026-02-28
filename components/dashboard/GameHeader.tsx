@@ -6,6 +6,10 @@ import { formatCurrency, getPercentage } from "../../utils/helper.ts";
 
 export const GameHeader = () => {
   const { player } = usePlayerStore();
+  if (!player) return null;
+
+  const eneryBar = (player.energy / player.max_energy) * 100;
+  const stressBar = (player.stress / player.max_stress) * 100;
   return (
     <View style={styles.headerContainer}>
       {/* Top Row: Balance and Rating */}
@@ -29,15 +33,6 @@ export const GameHeader = () => {
         </View>
       </View>
 
-      {/* Middle Row: Passive Income Status */}
-      <View style={styles.incomeRow}>
-        <View style={styles.statusGroup}>
-          <View style={styles.pulseDot} />
-          <Text style={styles.statusLabel}>PASSIVE INCOME</Text>
-        </View>
-        <Text style={styles.incomeText}>+$15.50/sec</Text>
-      </View>
-
       {/* Bottom Row: Energy and Stress Bars */}
       <View style={styles.statsGrid}>
         {/* Energy Bar */}
@@ -59,7 +54,7 @@ export const GameHeader = () => {
             <View
               style={[
                 styles.progressBarFill,
-                { backgroundColor: "#fbbf24", width: "84%" },
+                { backgroundColor: "#fbbf24", width: `${eneryBar}%` },
               ]}
             />
           </View>
@@ -84,7 +79,10 @@ export const GameHeader = () => {
             <View
               style={[
                 styles.progressBarFill,
-                { backgroundColor: theme.colors.secondary, width: "12%" },
+                {
+                  backgroundColor: theme.colors.secondary,
+                  width: `${stressBar}%`,
+                },
               ]}
             />
           </View>
@@ -174,6 +172,7 @@ const styles = StyleSheet.create({
   statsGrid: {
     flexDirection: "row",
     gap: 12,
+    marginTop: 12,
   },
   statItem: {
     flex: 1,

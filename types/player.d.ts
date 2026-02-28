@@ -10,8 +10,5 @@ type BasePlayerType = {
   stress: number;
   max_stress: number;
   reputation: number;
+  last_active_at: string;
 };
-
-type PlayerGigType = {
-  
-}

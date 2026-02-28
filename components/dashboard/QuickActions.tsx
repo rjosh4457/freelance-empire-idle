@@ -1,13 +1,13 @@
 import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
-import { ActionButton } from "./ActionButton.tsx";
 import { theme } from "../../constant/theme.ts";
+import { ActionButton } from "./ActionButton.tsx";
 
 export const QuickActions = () => {
   return (
     <View style={styles.container}>
       <ActionButton
-        icon="inventory"
+        icon="archive"
         label="Equipment"
         color="#fbbf24"
         onPress={() => router.replace("./(protected)/inventory")}
@@ -20,9 +20,15 @@ export const QuickActions = () => {
         onPress={() => console.log("Email pressed")}
       />
       <ActionButton
-        icon="person"
+        icon="account"
         label="Profile"
         color="#25f46a"
+        onPress={() => console.log("Profile pressed")}
+      />
+      <ActionButton
+        icon="trophy"
+        label="Leaderboard"
+        color="#f45525"
         onPress={() => console.log("Profile pressed")}
       />
     </View>

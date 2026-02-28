@@ -15,13 +15,13 @@ import { useClientStore } from "../../stores/client-store.ts";
 import { useGigsStore } from "../../stores/gig-store.ts";
 import { usePlayerStore } from "../../stores/player-store.ts";
 import { SkillCode } from "../../types/skills.d.ts";
-import { getDifficultyLabel } from "../../utils/helper.ts";
 import { SKILL_MAP } from "../../utils/mapping.ts";
+import { formatMinutesCompact } from "../../utils/time.ts";
 
 const CATEGORIES = ["All Gigs", "Web Dev", "Design", "Marketing", "Scripting"];
 
 export default function Marketplace() {
-  const { gigs, getAllGigs } = useGigsStore();
+  const { gigs, getAllGigs, saveAcceptedGig } = useGigsStore();
   const { player } = usePlayerStore();
   const { clients } = useClientStore();
 
@@ -107,12 +107,14 @@ export default function Marketplace() {
           <GigCard
             key={gig.id}
             title={gig.name}
-            difficulty={getDifficultyLabel(gig.difficulty)}
             rating={gig.difficulty}
+            urgency={gig.urgency_level}
             reward={`$${gig.reward_money.toFixed(2)}`}
             xp={`+${gig.reward_reputation}`}
             requirement={`Lvl ${gig.required_level} ${SKILL_MAP[gig.required_skill as SkillCode]}`}
+            duration={formatMinutesCompact(gig.duration)}
             accentColor="#3b82f6"
+            onAcceptGig={() => saveAcceptedGig(gig)}
           />
         ))}
       </ScrollView>

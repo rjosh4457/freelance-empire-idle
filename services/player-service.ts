@@ -19,9 +19,7 @@ export const getProfile = async (): Promise<DBResponse<BasePlayerType>> => {
     }
 
     logSQL("getProfile", true, start, {
-      id: player.id,
-      name: player.company_name,
-      money: player.money,
+      player: player,
     });
     return {
       success: true,
@@ -106,9 +104,34 @@ export const updatePlayerBalance = async (
   }
 };
 
-export const getPlayerGigs = async () => {
+export const updateLastActive = async (
+  playerId: number,
+  lastActive: string,
+): Promise<DBResponse<void>> => {
   const start = performance.now();
+
   try {
     const db = await getDb();
-  } catch (error) {}
+    const result = await db.runAsync(
+      `UPDATE players 
+       SET last_active_at = ?, 
+           updated_at = CURRENT_TIMESTAMP 
+       WHERE id = ?`,
+      [lastActive, playerId],
+    );
+    if (result.changes === 0) {
+      return { success: false, error: "Player not found." };
+    }
+
+    logSQL("updateLastActive", true, start, {
+      playerId,
+      lastActive: lastActive,
+      changes: result.changes,
+    });
+
+    return { success: true };
+  } catch (error) {
+    logSQL("updateLastActive", false, start, error);
+    return { success: false, error: "Failed to update last active." };
+  }
 };

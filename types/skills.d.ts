@@ -18,6 +18,7 @@ type ActiveSkillType = Pick<
   BaseSkillType,
   "id" | "name" | "category" | "icon" | "color" | "description" | "base_xp"
 > & {
+  code: string;
   level: number;
   current_xp: number;
   base_upgrade_cost: number;

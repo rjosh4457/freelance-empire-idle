@@ -4,6 +4,7 @@ type BaseGigType = {
   description: string;
   type: string;
   client_id: string; // id in BaseClientType
+  client_name: string;
   required_skill: string;
   required_level: number;
   difficulty: number;
@@ -18,4 +19,12 @@ type BaseGigType = {
   success_score: number;
   created_at: string;
   expires_at: string;
+};
+
+type AcceptedGigType = BaseGigType & {
+  id: number;
+  started_at: string;
+  end_at: string;
+  status: string;
+  progress: number;
 };

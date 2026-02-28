@@ -13,17 +13,29 @@ import {
 } from "react-native";
 
 // Internal Imports
+import { router } from "expo-router";
 import { PrimaryButton } from "../components/common/PrimaryButton.tsx";
 import { PrimaryInput } from "../components/common/PrimaryInput.tsx";
 import { theme } from "../constant/theme.ts";
+import { createDailyMilestones } from "../services/milestone-service.ts";
 import { createProfile } from "../services/player-service.ts";
+import { useClientStore } from "../stores/client-store.ts";
+import { useGigsStore } from "../stores/gig-store.ts";
+import { useMilestoneStore } from "../stores/milestone-store.ts";
 import { usePlayerStore } from "../stores/player-store.ts";
+import { useSkillStore } from "../stores/skills-store.ts";
+import { useToolStore } from "../stores/tools-store.ts";
 
 export default function Onboarding() {
   const [studioName, setStudioName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const pulseAnim = useRef(new Animated.Value(0)).current;
   const { setPlayer } = usePlayerStore();
+  const { getCurrentActiveGig } = useGigsStore();
+  const { getMilestones } = useMilestoneStore();
+  const { getPlayerSkills, getAllSkills } = useSkillStore();
+  const { getAllTools, getPlayerTools } = useToolStore();
+  const { getAllClients } = useClientStore();
 
   useEffect(() => {
     const pulse = () => {
@@ -71,11 +83,30 @@ export default function Onboarding() {
     }
 
     setIsSubmitting(true);
+
     const response = await createProfile({ company_name: studioName });
 
     if (response.success && response.data) {
       setPlayer(response.data);
+
+      await createDailyMilestones(response.data.id);
+      await Promise.all([
+        getCurrentActiveGig(),
+        getMilestones(),
+        getPlayerSkills(),
+        getAllTools([]),
+        getPlayerTools(),
+        getAllClients(),
+      ]);
+
+      await getAllSkills();
+
+      router.replace("/(tabs)");
+    } else {
+      Alert.alert("Error", response.error || "Failed to create profile.");
     }
+
+    setIsSubmitting(false);
   };
 
   return (

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { getProfile } from "../services/player-service.ts";
+import { getProfile, updateLastActive } from "../services/player-service.ts";
 
 interface PlayerState {
   player: BasePlayerType | null;
@@ -7,9 +7,10 @@ interface PlayerState {
   getPlayer: () => Promise<{ success: boolean; error?: string }>;
   setPlayer: (player: BasePlayerType) => void;
   updateMoney: (newAmount: number) => void;
+  saveLastActive: () => void;
 }
 
-export const usePlayerStore = create<PlayerState>((set) => ({
+export const usePlayerStore = create<PlayerState>((set, get) => ({
   player: null,
   money: 0,
 
@@ -37,4 +38,22 @@ export const usePlayerStore = create<PlayerState>((set) => ({
       money: newAmount,
       player: state.player ? { ...state.player, money: newAmount } : null,
     })),
+
+  saveLastActive: async () => {
+    const { player } = get();
+    if (!player) return;
+    const now = new Date().toISOString();
+    console.log("Now", now);
+
+    const result = await updateLastActive(player?.id, now);
+
+    if (result.success) {
+      set({
+        player: {
+          ...player,
+          last_active_at: now,
+        },
+      });
+    }
+  },
 }));

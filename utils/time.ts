@@ -48,3 +48,32 @@ export const getTimeRemaining = (targetDate: string | Date): string => {
 
   return parts.join(" ");
 };
+
+export function formatMsCompact(ms: number): string {
+  const totalSeconds = Math.floor(ms / 1000);
+
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (hours > 0) {
+    return minutes > 0 ? `${hours}h:${minutes}` : `${hours}h`;
+  }
+
+  if (minutes > 0) {
+    return seconds > 0 ? `${minutes}m:${seconds}` : `${minutes}m`;
+  }
+
+  return `${seconds}s`;
+}
+export function formatMinutesCompact(minutes: number): string {
+  if (minutes <= 0) return "0m";
+
+  if (minutes >= 60) {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return mins > 0 ? `${hours}h:${mins}` : `${hours}h`;
+  }
+
+  return `${minutes}m`;
+}

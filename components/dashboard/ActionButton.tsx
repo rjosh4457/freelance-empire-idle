@@ -1,9 +1,10 @@
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRef } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import { IconNameMCI } from "../../types/common.d.ts";
 
 interface ActionButtonProps {
-  icon: keyof typeof MaterialIcons.glyphMap;
+  icon: IconNameMCI;
   label: string;
   color: string;
   onPress: () => void;
@@ -49,7 +50,7 @@ export const ActionButton = ({
             },
           ]}
         >
-          <MaterialIcons name={icon} size={28} color={color} />
+          <MaterialCommunityIcons name={icon} size={28} color={color} />
         </Animated.View>
       </Pressable>
 

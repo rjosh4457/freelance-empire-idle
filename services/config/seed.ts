@@ -22,7 +22,7 @@ export const SEED_DATA = [
   ('m20', 'Overachiever', 'Complete all other 4 dailies', 'workspace-premium', '#ffd700', 4, 'DAILIES_COMPLETED', 1000, 1000);`,
 
   `INSERT OR IGNORE INTO skills (id, code, name, description, color, icon, category, learn_duration_minutes, base_xp, price, unlock_at) VALUES
-  ('s1', 'COD', 'Coding', 'Build software, websites, and automation.', '#3b82f6', 'laptop', 'Technical', 10, 100, 2500, 1),
+  ('s1', 'COD', 'Coding', 'Build software, websites, and automation.', '#3b82f6', 'laptop', 'Technical', 1, 100, 2500, 1),
   ('s2', 'DBM', 'Databases', 'Design and manage data storage systems.', '#06b6d4', 'storage', 'Technical', 15, 110, 2500, 1),
   ('s3', 'MAT', 'Mathematics', 'Logic and analytics for problem solving.', '#6366f1', 'calculate', 'Technical', 15, 120, 2500, 1),
   ('s4', 'SEC', 'Cybersecurity', 'Protect systems and data from threats.', '#ef4444', 'security', 'Technical', 150, 120, 3500, 5),

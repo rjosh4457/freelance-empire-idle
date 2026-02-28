@@ -1,27 +1,32 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { theme } from "../../../constant/theme.ts";
+import { getColorByUrgency } from "../../../utils/helper.ts";
 
 interface GigCardProps {
   title: string;
-  difficulty: string;
   rating: number;
+  urgency: string;
   reward: string;
   xp: string;
   requirement: string;
   accentColor?: string;
+  duration: string;
   opacity?: number;
+  onAcceptGig: () => void;
 }
 
 export const GigCard = ({
   title,
-  difficulty,
   rating,
   reward,
+  urgency,
   xp,
   requirement,
   accentColor = theme.colors.primary,
   opacity = 1,
+  duration,
+  onAcceptGig,
 }: GigCardProps) => {
   return (
     <View
@@ -44,11 +49,13 @@ export const GigCard = ({
         <View
           style={[
             styles.categoryBadge,
-            { backgroundColor: `${accentColor}1A` },
+            { backgroundColor: `${getColorByUrgency(urgency)}1A` },
           ]}
         >
-          <Text style={[styles.categoryText, { color: accentColor }]}>
-            {difficulty}
+          <Text
+            style={[styles.categoryText, { color: getColorByUrgency(urgency) }]}
+          >
+            {urgency}
           </Text>
         </View>
       </View>
@@ -65,6 +72,19 @@ export const GigCard = ({
           <View>
             <Text style={styles.statLabel}>REWARD</Text>
             <Text style={styles.rewardValue}>{reward}</Text>
+          </View>
+        </View>
+        <View style={styles.statItem}>
+          <View style={styles.statIconBox}>
+            <MaterialIcons
+              name="schedule"
+              size={20}
+              color={theme.colors.primary}
+            />
+          </View>
+          <View>
+            <Text style={styles.statLabel}>DURATION</Text>
+            <Text style={styles.rewardValue}>{duration}</Text>
           </View>
         </View>
         <View style={styles.statItem}>
@@ -92,6 +112,7 @@ export const GigCard = ({
         </View>
         <TouchableOpacity
           style={[styles.acceptBtn, { backgroundColor: theme.colors.primary }]}
+          onPress={onAcceptGig}
         >
           <Text style={styles.acceptBtnText}>ACCEPT GIG</Text>
         </TouchableOpacity>

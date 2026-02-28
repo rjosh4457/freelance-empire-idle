@@ -19,7 +19,7 @@ interface SkillState {
   buySkill: (
     skill: BaseSkillType,
   ) => Promise<{ success: boolean; error?: string }>;
-  getPlayerSkills: () => Promise<void>;
+  getPlayerSkills: () => Promise<{ success: boolean; error?: string }>;
   getAllSkills: () => Promise<void>;
   upgradeSkill: (skillId: string, cost: number) => Promise<void>;
 }
@@ -31,22 +31,30 @@ export const useSkillStore = create<SkillState>((set, get) => ({
 
   getPlayerSkills: async () => {
     const res = await fetchActiveSkills();
-    if (!res.data) return;
+    if (!res.data)
+      return { success: false, error: "Cannot fetch active skills" };
 
-    const now = new Date();
-    // Using getTime() for safer comparison
-    const active = res.data.filter(
-      (a) => new Date(a.learn_end_time).getTime() <= now.getTime(),
-    );
+    const now = Date.now();
 
-    const studying = res.data.filter(
-      (a) => new Date(a.learn_end_time).getTime() > now.getTime(),
-    );
+    const active: typeof res.data = [];
+    const studying: typeof res.data = [];
+
+    for (const skill of res.data) {
+      const endTime = new Date(skill.learn_end_time).getTime();
+
+      if (endTime <= now) {
+        active.push(skill);
+      } else {
+        studying.push(skill);
+      }
+    }
 
     set({
       activeSkills: active,
       studyingSkills: studying,
     });
+
+    return { success: true };
   },
 
   getAllSkills: async () => {

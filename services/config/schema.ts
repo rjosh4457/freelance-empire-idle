@@ -12,6 +12,7 @@ export const SCHEMA = [
     max_energy INTEGER DEFAULT 100,
     stress INTEGER DEFAULT 0,
     max_stress INTEGER DEFAULT 100,
+    last_active_at TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );`,
@@ -94,6 +95,7 @@ export const SCHEMA = [
     description TEXT,
     type TEXT NOT NULL,                           -- category (design, dev, marketing, etc.)
     client_id TEXT NOT NULL,                      -- foreign key to clients
+    client_name TEXT NOT NULL,
     required_skill TEXT,                          -- skill required for gig
     required_level INTEGER DEFAULT 1,             -- minimum skill level
     difficulty INTEGER DEFAULT 1,                 -- 1 = easy, 5 = hard
@@ -116,6 +118,8 @@ export const SCHEMA = [
     player_id INTEGER NOT NULL,
     gig_id INTEGER NOT NULL,
     started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    end_at DATETIME NOT NULL,
+    progress INTEGER NOT NULL DEFAULT 0,
     status TEXT DEFAULT 'in_progress',              -- in_progress / paused / failed
     FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE,
     FOREIGN KEY (gig_id) REFERENCES gigs(id) ON DELETE CASCADE

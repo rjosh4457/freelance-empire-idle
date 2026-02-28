@@ -1,3 +1,25 @@
+export const calculateSpeedBySkillLevel = (
+  player: BasePlayerType,
+  skill_level: number,
+) => {
+  const baseSpeed = 0.005;
+
+  // High energy = faster | High stress = slower
+  // (Assuming stress and energy are 0-100)
+  const energyBonus = player.energy * 0.002;
+  const stressPenalty = player.stress * 0.005;
+
+  // Add skill_level into the mix so leveling up actually matters
+  const skillBonus = skill_level * 0.002;
+
+  const speed = baseSpeed + energyBonus + skillBonus - stressPenalty;
+
+  // Clamp speed so it never goes below a minimum work rate (e.g., 0.01)
+  const finalSpeed = Math.max(0.01, speed);
+
+  return Math.round(finalSpeed * 10000) / 10000;
+};
+
 /**
  * Calculates the total XP required to complete the current level.
  * @param base_xp - From your 'skills' table (e.g., 100 or 150)

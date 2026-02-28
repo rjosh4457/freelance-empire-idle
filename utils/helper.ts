@@ -38,6 +38,10 @@ const COLORS = [
 export const getRandomColor = () => {
   return COLORS[Math.floor(Math.random() * COLORS.length)];
 };
+export const getColorByUrgency = (urgency: string) => {
+  if (urgency === "High") return "#ef4444";
+  return "#3b82f6";
+};
 export const getColorByLevel = (level: number) => {
   if (level >= 15) return "#ef4444"; // Red for high levels
   if (level >= 10) return "#f59e0b"; // Orange for mid levels
@@ -80,6 +84,6 @@ export const getDifficultyLabel = (level: number): string => {
     case 5:
       return "Expert";
     default:
-      return level > 5 ? "Legendary" : "Trivial";
+      return "";
   }
 };
